@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inkwell &amp; Bond — Fine Paper Goods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,680&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --paper:#F7F3EA;
+    --paper-dim:#EFE9DA;
+    --brass:#B8935A;
+    --brass-dark:#96733D;
+    --stone:#6B6558;
+    --forest:#3D5C4A;
+    --shadow: 0 12px 30px rgba(27,42,74,0.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  ::selection{background:var(--brass); color:var(--paper);}
+  img,svg{display:block;}
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:28px 48px;
+    border-bottom:1px solid rgba(27,42,74,0.12);
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:40;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:22px;
+    font-weight:600;
+    text-decoration:none;
+  }
+  .logo-mark{
+    width:34px;height:34px;
+    border-radius:50%;
+    border:1.5px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces', serif;
+    font-size:16px;
+  }
+  nav{display:flex; gap:36px; font-size:14px; letter-spacing:0.03em; text-transform:uppercase;}
+  nav a{text-decoration:none; opacity:0.75; transition:opacity .2s;}
+  nav a:hover{opacity:1;}
+
+  .cart-btn{
+    display:flex; align-items:center; gap:10px;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:999px;
+    padding:10px 20px;
+    font-family:'Work Sans', sans-serif;
+    font-size:14px; font-weight:500;
+    cursor:pointer;
+    text-decoration:none;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cart-btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
+  .cart-btn:focus-visible, button:focus-visible, a:focus-visible{
+    outline:2px solid var(--brass); outline-offset:3px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:110px 48px 90px;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-size:13px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--brass-dark); margin-bottom:18px; font-weight:600;
+  }
+  .hero h1{
+    font-size:clamp(40px, 5.2vw, 68px);
+    line-height:1.03;
+    margin:0 0 24px;
+  }
+  .hero p{
+    font-size:18px; line-height:1.65; color:var(--stone); max-width:480px; margin:0 0 32px;
+  }
+  .hero-ctas{ display:flex; gap:16px; align-items:center; }
+  .btn-outline{
+    border:1.5px solid var(--ink); color:var(--ink);
+    background:none; border-radius:999px; padding:12px 24px;
+    font-size:14px; font-weight:500; text-decoration:none;
+    transition:background .2s ease, color .2s ease;
+  }
+  .btn-outline:hover{ background:var(--ink); color:var(--paper); }
+
+  /* Signature: wax seal drop */
+  .seal-scene{
+    position:relative; height:420px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .seal{
+    width:220px; height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #C4915A, var(--brass-dark) 70%);
+    box-shadow: inset 0 6px 18px rgba(0,0,0,0.25), 0 20px 40px rgba(27,42,74,0.25);
+    display:flex; align-items:center; justify-content:center;
+    animation: drop 1.1s cubic-bezier(.22,1.6,.4,1) both;
+    animation-delay:.15s;
+  }
+  .seal-inner{
+    width:150px; height:150px; border-radius:50%;
+    border:2px solid rgba(255,255,255,0.55);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-size:15px; letter-spacing:0.14em;
+    color:rgba(255,255,255,0.9); text-align:center; line-height:1.4;
+  }
+  @keyframes drop{
+    0%{ transform:translateY(-140px) scale(0.6); opacity:0; }
+    60%{ transform:translateY(6px) scale(1.05); opacity:1; }
+    100%{ transform:translateY(0) scale(1); }
+  }
+  .seal-ring{
+    position:absolute; width:280px; height:280px; border-radius:50%;
+    border:1px dashed rgba(27,42,74,0.25);
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- Collections ---------- */
+  main{ max-width:1280px; margin:0 auto; padding:0 48px; }
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin:0 0 32px; border-bottom:1px solid rgba(27,42,74,0.14); padding-bottom:16px;
+  }
+  .section-head h2{ font-size:26px; margin:0; }
+  .section-head a{ font-size:13px; text-decoration:underline; color:var(--stone); }
+
+  .collections{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+    padding:60px 0 20px;
+  }
+  .tile{
+    background:var(--paper-dim);
+    border:1px solid rgba(27,42,74,0.12);
+    border-radius:6px;
+    padding:36px 26px;
+    text-decoration:none;
+    color:var(--ink);
+    display:flex; flex-direction:column; gap:14px;
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .tile:hover{ box-shadow:var(--shadow); transform:translateY(-3px); }
+  .tile .art{ font-size:40px; }
+  .tile h3{ font-size:19px; margin:0; }
+  .tile p{ font-size:13.5px; color:var(--stone); margin:0; line-height:1.55; }
+  .tile .go{ font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--brass-dark); margin-top:auto; }
+
+  /* ---------- Story band ---------- */
+  .story{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:60px;
+    align-items:center;
+    padding:90px 0;
+    border-top:1px solid rgba(27,42,74,0.12);
+    margin-top:40px;
+  }
+  .story .eyebrow{ margin-bottom:16px; }
+  .story h2{ font-size:34px; margin:0 0 20px; line-height:1.15; }
+  .story p{ font-size:16px; line-height:1.75; color:var(--stone); margin:0 0 16px; }
+  .story-stats{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:24px;
+  }
+  .stat{
+    border:1px solid rgba(27,42,74,0.14); border-radius:6px; padding:24px;
+    background:var(--paper-dim);
+  }
+  .stat .num{ font-family:'Fraunces', serif; font-size:32px; display:block; margin-bottom:6px; }
+  .stat .label{ font-size:13px; color:var(--stone); }
+
+  /* ---------- Newsletter ---------- */
+  .newsletter{
+    background:var(--ink); color:var(--paper);
+    border-radius:8px;
+    padding:56px 48px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:32px;
+    margin:20px 0 90px;
+  }
+  .newsletter h2{ font-size:26px; margin:0 0 8px; color:var(--paper); }
+  .newsletter p{ font-size:14.5px; color:rgba(247,243,234,0.7); margin:0; max-width:360px; }
+  .newsletter form{ display:flex; gap:10px; flex-shrink:0; }
+  .newsletter input{
+    padding:13px 16px; border-radius:999px; border:1px solid rgba(247,243,234,0.3);
+    background:rgba(247,243,234,0.06); color:var(--paper); font-size:14px; width:230px;
+    font-family:'Work Sans', sans-serif;
+  }
+  .newsletter input::placeholder{ color:rgba(247,243,234,0.5); }
+  .newsletter button{
+    background:var(--brass); color:var(--ink); border:none; border-radius:999px;
+    padding:13px 22px; font-size:14px; font-weight:600; cursor:pointer;
+    transition:background .2s ease;
+  }
+  .newsletter button:hover{ background:#CBA46F; }
+
+  footer{
+    padding:36px 48px; border-top:1px solid rgba(27,42,74,0.12);
+    font-size:13px; color:var(--stone); display:flex; justify-content:space-between;
+    max-width:1280px; margin:0 auto;
+  }
+
+  @media (max-width: 900px){
+    .hero{ grid-template-columns:1fr; padding:70px 24px 60px; text-align:left; }
+    .seal-scene{ height:260px; order:-1; }
+    .seal{ width:150px; height:150px; }
+    .seal-inner{ width:100px; height:100px; font-size:11px; }
+    .seal-ring{ width:190px; height:190px; }
+    .collections{ grid-template-columns:1fr; padding:40px 0 10px; }
+    .story{ grid-template-columns:1fr; padding:60px 0; gap:32px; }
+    main{ padding:0 24px; }
+    header{ padding:18px 20px; }
+    nav{ display:none; }
+    .newsletter{ flex-direction:column; align-items:flex-start; padding:36px 24px; margin:20px 0 60px; }
+    .newsletter form{ width:100%; }
+    .newsletter input{ width:100%; }
+    footer{ padding:28px 24px; flex-direction:column; gap:6px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="home.html">
+    <span class="logo-mark">I&amp;B</span>
+    Inkwell &amp; Bond
+  </a>
+  <nav>
+    <a href="index.html#shop">Shop</a>
+    <a href="index.html#shop">Notebooks</a>
+    <a href="index.html#shop">Pens</a>
+    <a href="index.html#shop">Sealing Wax</a>
+  </nav>
+  <a class="cart-btn" href="index.html">Shop Now</a>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">Small-batch stationery, bound by hand</div>
+    <h1>Correspondence worth keeping.</h1>
+    <p>Cotton-paper notebooks, fountain pens filled by hand, and wax seals cast in small runs. Every order is packed like it's the only one we made today.</p>
+    <div class="hero-ctas">
+      <a class="cart-btn" href="index.html">Browse the Collection</a>
+      <a class="btn-outline" href="#story">Our Story</a>
+    </div>
+  </div>
+  <div class="seal-scene">
+    <div class="seal-ring"></div>
+    <div class="seal">
+      <div class="seal-inner">EST.<br>2019<br>I &amp; B</div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="section-head">
+    <h2>Shop by Collection</h2>
+    <a href="index.html#shop">View everything</a>
+  </div>
+
+  <div class="collections">
+    <a class="tile" href="index.html#shop">
+      <span class="art">📓</span>
+      <h3>Notebooks &amp; Journals</h3>
+      <p>Cotton rag paper, hand-sewn bindings, deckled edges that age with use.</p>
+      <span class="go">Shop notebooks →</span>
+    </a>
+    <a class="tile" href="index.html#shop">
+      <span class="art">🖋️</span>
+      <h3>Pens &amp; Ink</h3>
+      <p>Brass-bodied fountain pens and slow-oxidizing iron gall ink.</p>
+      <span class="go">Shop pens →</span>
+    </a>
+    <a class="tile" href="index.html#shop">
+      <span class="art">🕯️</span>
+      <h3>Sealing Wax</h3>
+      <p>Cast in small batches, paired with brass seals and letterpress cards.</p>
+      <span class="go">Shop wax →</span>
+    </a>
+  </div>
+
+  <div class="story" id="story">
+    <div>
+      <div class="eyebrow">Since 2019</div>
+      <h2>Made in a converted print shop in Leiden.</h2>
+      <p>We started with one letterpress and a mailing list of forty people. Six years on, the same principle holds: paper should feel worth writing on, and a letter should feel worth sending.</p>
+      <p>Every notebook is sewn, not glued. Every wax stick is poured by hand. We keep runs small on purpose — it's the only way we've found to keep the quality where we want it.</p>
+    </div>
+    <div class="story-stats">
+      <div class="stat"><span class="num">6</span><span class="label">Years in the print shop</span></div>
+      <div class="stat"><span class="num">40+</span><span class="label">Papers &amp; inks tested per release</span></div>
+      <div class="stat"><span class="num">100%</span><span class="label">Hand-sewn bindings</span></div>
+      <div class="stat"><span class="num">Tue</span><span class="label">Weekly shipping day</span></div>
+    </div>
+  </div>
+
+  <div class="newsletter">
+    <div>
+      <h2>Notes from the print shop</h2>
+      <p>New releases, restocks, and the occasional story about ink. One email a month, never more.</p>
+    </div>
+    <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed ✓';">
+      <input type="email" placeholder="you@example.com" required aria-label="Email address">
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <span>© 2026 Inkwell &amp; Bond, Ltd.</span>
+  <span>Shipped flat, sealed with wax, every Tuesday.</span>
+</footer>
+
+</body>
+</html>
