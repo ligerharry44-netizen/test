@@ -16,6 +16,7 @@
     --brass-dark:#96733D;
     --stone:#6B6558;
     --forest:#3D5C4A;
+    --rust:#A6432F;
     --shadow: 0 12px 30px rgba(27,42,74,0.12);
   }
   *{box-sizing:border-box;}
@@ -34,6 +35,7 @@
   }
   a{color:inherit;}
   ::selection{background:var(--brass); color:var(--paper);}
+  button{ font-family:inherit; }
 
   /* ---------- Header ---------- */
   header{
@@ -46,6 +48,7 @@
     top:0;
     background:var(--paper);
     z-index:40;
+    gap:20px;
   }
   .logo{
     display:flex;
@@ -53,6 +56,8 @@
     gap:12px;
     font-size:22px;
     font-weight:600;
+    text-decoration:none;
+    flex-shrink:0;
   }
   .logo-mark{
     width:34px;height:34px;
@@ -62,9 +67,11 @@
     font-family:'Fraunces', serif;
     font-size:16px;
   }
-  nav{display:flex; gap:36px; font-size:14px; letter-spacing:0.03em; text-transform:uppercase;}
-  nav a{text-decoration:none; opacity:0.75; transition:opacity .2s;}
-  nav a:hover{opacity:1;}
+  nav{display:flex; gap:36px; font-size:14px; letter-spacing:0.03em; text-transform:uppercase; flex-shrink:0;}
+  nav a{text-decoration:none; opacity:0.75; transition:opacity .2s; cursor:pointer; background:none; border:none; font:inherit; letter-spacing:inherit; text-transform:inherit; color:inherit; padding:0;}
+  nav a:hover, nav button:hover{ opacity:1; }
+  nav .wish-link{ display:flex; align-items:center; gap:6px; }
+  .header-actions{ display:flex; align-items:center; gap:12px; flex-shrink:0; }
 
   .cart-btn{
     display:flex; align-items:center; gap:10px;
@@ -77,7 +84,7 @@
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .cart-btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
-  .cart-btn:focus-visible, button:focus-visible, a:focus-visible{
+  .cart-btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible{
     outline:2px solid var(--brass); outline-offset:3px;
   }
   #cart-count{
@@ -87,10 +94,15 @@
     display:flex; align-items:center; justify-content:center;
     padding:0 5px;
   }
+  .mini-count{
+    background:var(--rust); color:var(--paper);
+    border-radius:999px; min-width:17px; height:17px; font-size:11px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; padding:0 4px;
+  }
 
   /* ---------- Hero ---------- */
   .hero{
-    padding:88px 48px 64px;
+    padding:88px 48px 56px;
     max-width:760px;
   }
   .eyebrow{
@@ -106,19 +118,59 @@
     font-size:18px; line-height:1.6; color:var(--stone); max-width:520px;
   }
 
-  /* ---------- Product grid ---------- */
+  /* ---------- Filter bar ---------- */
   main{ padding:0 48px 100px; }
+  .filter-bar{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:18px 0 26px;
+    border-bottom:1px solid rgba(27,42,74,0.12);
+    margin-bottom:28px;
+  }
+  .pills{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pill{
+    border:1px solid rgba(27,42,74,0.25); background:none; color:var(--ink);
+    border-radius:999px; padding:8px 16px; font-size:13px; cursor:pointer;
+    transition:background .18s ease, color .18s ease, border-color .18s ease;
+    white-space:nowrap;
+  }
+  .pill:hover{ border-color:var(--ink); }
+  .pill.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+
+  .search-wrap{
+    position:relative; flex:1; min-width:180px; max-width:280px;
+  }
+  .search-wrap input{
+    width:100%; padding:10px 14px 10px 34px; border-radius:999px;
+    border:1px solid rgba(27,42,74,0.25); background:var(--paper);
+    font-size:13.5px; color:var(--ink); font-family:inherit;
+  }
+  .search-wrap input::placeholder{ color:var(--stone); }
+  .search-wrap .icon{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    font-size:13px; color:var(--stone); pointer-events:none;
+  }
+
+  .sort-select{
+    padding:10px 14px; border-radius:999px; border:1px solid rgba(27,42,74,0.25);
+    background:var(--paper); color:var(--ink); font-size:13.5px; font-family:inherit;
+    cursor:pointer; margin-left:auto;
+  }
+
   .section-head{
     display:flex; align-items:baseline; justify-content:space-between;
-    margin:0 0 32px; border-bottom:1px solid rgba(27,42,74,0.14); padding-bottom:16px;
+    margin:0 0 26px;
   }
-  .section-head h2{ font-size:26px; margin:0; }
+  .section-head h2{ font-size:24px; margin:0; }
   .section-head span{ font-size:13px; color:var(--stone); }
 
+  /* ---------- Product grid ---------- */
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
     gap:28px 24px;
+  }
+  .no-results{
+    grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--stone); font-size:15px;
   }
   .card{
     background:var(--paper);
@@ -131,19 +183,50 @@
   .card:hover{ box-shadow:var(--shadow); transform:translateY(-3px); }
   .card-art{
     height:170px;
+    position:relative;
     display:flex; align-items:center; justify-content:center;
     font-size:52px;
     background:var(--paper-dim);
     border-bottom:1px solid rgba(27,42,74,0.1);
+    cursor:pointer;
   }
-  .card-body{ padding:18px 18px 20px; display:flex; flex-direction:column; gap:8px; flex:1; }
-  .card-body h3{ font-size:18px; margin:0; }
-  .card-body .desc{ font-size:13.5px; color:var(--stone); line-height:1.5; flex:1; }
+  .wish-btn{
+    position:absolute; top:10px; right:10px;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(247,243,234,0.9); border:1px solid rgba(27,42,74,0.15);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:14px; color:var(--ink);
+    transition:transform .15s ease;
+  }
+  .wish-btn:hover{ transform:scale(1.08); }
+  .wish-btn.active{ color:var(--rust); }
+  .stock-badge{
+    position:absolute; bottom:10px; left:10px;
+    font-size:11px; letter-spacing:0.03em; font-weight:600;
+    padding:4px 9px; border-radius:999px;
+    background:rgba(247,243,234,0.92); border:1px solid rgba(27,42,74,0.15);
+  }
+  .stock-badge.low{ color:var(--rust); }
+  .stock-badge.ok{ color:var(--forest); }
+
+  .card-body{ padding:18px 18px 20px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card-body h3{ font-size:18px; margin:0; cursor:pointer; }
+  .rating{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--stone); }
+  .rating .stars{ color:var(--brass-dark); letter-spacing:1px; }
+  .card-body .desc{ font-size:13.5px; color:var(--stone); line-height:1.5; flex:1; margin-top:2px; }
   .card-foot{
     display:flex; align-items:center; justify-content:space-between;
-    margin-top:10px;
+    margin-top:10px; gap:10px;
   }
   .price{ font-family:'Fraunces', serif; font-size:19px; }
+
+  .card-actions{ display:flex; align-items:center; gap:8px; }
+  .quickview-btn{
+    background:none; border:1px solid rgba(27,42,74,0.3); color:var(--ink);
+    border-radius:999px; padding:7px 12px; font-size:12px; cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .quickview-btn:hover{ border-color:var(--ink); }
 
   .stamp-btn{
     position:relative;
@@ -156,6 +239,7 @@
     font-size:20px;
     display:flex; align-items:center; justify-content:center;
     transition:background .18s ease, color .18s ease;
+    flex-shrink:0;
   }
   .stamp-btn:hover{ background:var(--ink); color:var(--paper); }
   .stamp-btn.stamped{
@@ -236,9 +320,28 @@
     background:
       radial-gradient(circle at 10px 0, transparent 9px, var(--paper) 9.5px) top left / 20px 20px repeat-x;
   }
+  .promo-row{
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .promo-row input{
+    flex:1; padding:10px 12px; border-radius:4px; border:1px solid rgba(27,42,74,0.25);
+    background:var(--paper); font-size:13px; font-family:inherit; color:var(--ink);
+    text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .promo-row button{
+    background:none; border:1px solid var(--ink); color:var(--ink);
+    border-radius:4px; padding:0 16px; font-size:13px; cursor:pointer;
+    transition:background .18s ease, color .18s ease;
+  }
+  .promo-row button:hover{ background:var(--ink); color:var(--paper); }
+  .promo-msg{ font-size:12px; margin:-10px 0 14px; min-height:14px; }
+  .promo-msg.ok{ color:var(--forest); }
+  .promo-msg.bad{ color:var(--rust); }
+
   .totals-row{
     display:flex; justify-content:space-between; font-size:14px; color:var(--stone); margin-bottom:6px;
   }
+  .totals-row.discount{ color:var(--forest); }
   .totals-row.grand{
     color:var(--ink); font-size:17px; font-family:'Fraunces', serif; margin-top:10px;
     padding-top:10px; border-top:1px solid rgba(27,42,74,0.15);
@@ -253,16 +356,76 @@
   .checkout-btn:hover{ background:var(--brass-dark); }
   .checkout-btn:disabled{ opacity:0.4; cursor:not-allowed; }
 
+  /* ---------- Quick view modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(27,42,74,0.45);
+    opacity:0; pointer-events:none; transition:opacity .22s ease;
+    z-index:60; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    background:var(--paper); border-radius:8px; max-width:640px; width:100%;
+    display:grid; grid-template-columns:1fr 1fr;
+    box-shadow:0 30px 60px rgba(27,42,74,0.3);
+    transform:translateY(16px) scale(0.98); opacity:0;
+    transition:transform .25s ease, opacity .25s ease;
+    max-height:88vh; overflow:hidden;
+  }
+  .modal-overlay.open .modal{ transform:translateY(0) scale(1); opacity:1; }
+  .modal-art{
+    background:var(--paper-dim); display:flex; align-items:center; justify-content:center;
+    font-size:110px;
+  }
+  .modal-body{ padding:32px 28px; display:flex; flex-direction:column; overflow-y:auto; }
+  .modal-close{
+    position:absolute; top:16px; right:16px; background:rgba(247,243,234,0.85);
+    border:1px solid rgba(27,42,74,0.15); border-radius:50%; width:32px; height:32px;
+    font-size:18px; cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center;
+  }
+  .modal{ position:relative; }
+  .modal-body h3{ font-size:24px; margin:0 0 8px; }
+  .modal-body .rating{ margin-bottom:14px; }
+  .modal-body .price{ font-size:22px; margin-bottom:14px; }
+  .modal-body .desc-full{ font-size:14.5px; line-height:1.65; color:var(--stone); margin-bottom:18px; }
+  .modal-stock{ font-size:13px; margin-bottom:18px; font-weight:500; }
+  .modal-stock.low{ color:var(--rust); }
+  .modal-stock.ok{ color:var(--forest); }
+  .modal-qty{ display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+  .modal-qty button{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--ink); background:none;
+    cursor:pointer; font-size:16px; color:var(--ink);
+  }
+  .modal-qty span{ font-size:15px; min-width:18px; text-align:center; }
+  .modal-add{
+    background:var(--ink); color:var(--paper); border:none; border-radius:999px;
+    padding:14px; font-size:14.5px; font-weight:500; cursor:pointer; margin-top:auto;
+    transition:background .2s ease;
+  }
+  .modal-add:hover{ background:var(--brass-dark); }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--paper); padding:13px 22px; border-radius:999px;
+    font-size:13.5px; box-shadow:var(--shadow); opacity:0; pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease; z-index:70;
+    display:flex; align-items:center; gap:8px;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
   footer{
     padding:36px 48px; border-top:1px solid rgba(27,42,74,0.12);
     font-size:13px; color:var(--stone); display:flex; justify-content:space-between;
   }
 
   @media (max-width:640px){
-    header{ padding:18px 20px; }
+    header{ padding:18px 20px; flex-wrap:wrap; }
     nav{ display:none; }
     .hero{ padding:56px 20px 40px; }
     main{ padding:0 20px 70px; }
+    .sort-select{ margin-left:0; }
+    .modal{ grid-template-columns:1fr; }
+    .modal-art{ height:160px; font-size:70px; }
     footer{ padding:28px 20px; flex-direction:column; gap:6px; }
   }
   @media (prefers-reduced-motion: reduce){
@@ -273,19 +436,19 @@
 <body>
 
 <header>
-  <div class="logo">
+  <a class="logo" href="home.html">
     <span class="logo-mark">I&amp;B</span>
     Inkwell &amp; Bond
-  </div>
+  </a>
   <nav>
     <a href="#shop">Shop</a>
-    <a href="#shop">Notebooks</a>
-    <a href="#shop">Pens</a>
-    <a href="#shop">Sealing Wax</a>
+    <button class="wish-link" id="wishNav">Wishlist <span class="mini-count" id="wishCount">0</span></button>
   </nav>
-  <button class="cart-btn" id="openCart" aria-haspopup="dialog" aria-controls="cartDrawer">
-    Bag <span id="cart-count">0</span>
-  </button>
+  <div class="header-actions">
+    <button class="cart-btn" id="openCart" aria-haspopup="dialog" aria-controls="cartDrawer">
+      Bag <span id="cart-count">0</span>
+    </button>
+  </div>
 </header>
 
 <section class="hero">
@@ -295,8 +458,23 @@
 </section>
 
 <main id="shop">
+  <div class="filter-bar">
+    <div class="pills" id="categoryPills"></div>
+    <div class="search-wrap">
+      <span class="icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search the collection…" aria-label="Search products">
+    </div>
+    <select class="sort-select" id="sortSelect" aria-label="Sort products">
+      <option value="featured">Sort: Featured</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="rating-desc">Highest Rated</option>
+      <option value="name-asc">Name: A–Z</option>
+    </select>
+  </div>
+
   <div class="section-head">
-    <h2>The Collection</h2>
+    <h2 id="gridTitle">The Collection</h2>
     <span id="itemCountLabel">6 pieces</span>
   </div>
   <div class="grid" id="productGrid"></div>
@@ -315,90 +493,269 @@
   </div>
   <div class="drawer-items" id="drawerItems"></div>
   <div class="drawer-foot">
+    <div class="promo-row">
+      <input type="text" id="promoInput" placeholder="Promo code">
+      <button id="promoApply">Apply</button>
+    </div>
+    <div class="promo-msg" id="promoMsg"></div>
     <div class="totals-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+    <div class="totals-row discount" id="discountRow" style="display:none;"><span>Discount</span><span id="discountAmt">−$0.00</span></div>
     <div class="totals-row"><span>Shipping</span><span id="shipping">$0.00</span></div>
     <div class="totals-row grand"><span>Total</span><span id="grandTotal">$0.00</span></div>
     <button class="checkout-btn" id="checkoutBtn" disabled>Complete Order</button>
   </div>
 </aside>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Product details">
+    <button class="modal-close" id="modalClose" aria-label="Close quick view">&times;</button>
+    <div class="modal-art" id="modalArt"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
   const PRODUCTS = [
-    { id:'p1', name:'Cotton Rag Notebook', desc:'240 pages, hand-sewn binding, deckled edge.', price:28, art:'📓' },
-    { id:'p2', name:'Bristol Fountain Pen', desc:'Brass barrel, fine nib, refillable converter.', price:64, art:'🖋️' },
-    { id:'p3', name:'Amber Sealing Wax Kit', desc:'Three sticks, brass seal, bone spoon.', price:22, art:'🕯️' },
-    { id:'p4', name:'Letterpress Card Set', desc:'Twelve cards, cotton envelopes, printed by hand.', price:19, art:'✉️' },
-    { id:'p5', name:'Iron Gall Ink, 50ml', desc:'Slow-oxidizing ink for archival correspondence.', price:16, art:'🧴' },
-    { id:'p6', name:'Brass Letter Opener', desc:'Cast brass, walnut handle, weighted grip.', price:34, art:'🗡️' },
+    { id:'p1', name:'Cotton Rag Notebook', category:'Notebooks', desc:'240 pages, hand-sewn binding, deckled edge. Made from 100% cotton rag paper that takes fountain pen ink beautifully without feathering or bleed-through.', price:28, art:'📓', rating:4.8, reviews:126, stock:14 },
+    { id:'p2', name:'Bristol Fountain Pen', category:'Pens', desc:'Brass barrel, fine nib, refillable converter. Weighted for long writing sessions and finished with a hand-brushed matte coat that ages beautifully.', price:64, art:'🖋️', rating:4.9, reviews:84, stock:4 },
+    { id:'p3', name:'Amber Sealing Wax Kit', category:'Wax', desc:'Three sticks, brass seal, bone spoon. Poured in small batches and cut by hand, each stick seals cleanly with a satisfying snap.', price:22, art:'🕯️', rating:4.6, reviews:57, stock:22 },
+    { id:'p4', name:'Letterpress Card Set', category:'Cards', desc:'Twelve cards, cotton envelopes, printed by hand on a century-old letterpress with deep, tactile impression.', price:19, art:'✉️', rating:4.7, reviews:39, stock:3 },
+    { id:'p5', name:'Iron Gall Ink, 50ml', category:'Ink', desc:'Slow-oxidizing ink for archival correspondence. Deepens from grey to true black over the first few days on the page.', price:16, art:'🧴', rating:4.5, reviews:61, stock:19 },
+    { id:'p6', name:'Brass Letter Opener', category:'Accessories', desc:'Cast brass, walnut handle, weighted grip. A small, quiet ritual object for the start of every letter.', price:34, art:'🗡️', rating:4.9, reviews:22, stock:9 },
   ];
 
-  let cart = {}; // id -> qty
-  try {
-    const saved = localStorage.getItem('inkwell_cart');
-    if (saved) cart = JSON.parse(saved);
-  } catch(e) {}
+  let cart = {};        // id -> qty
+  let wishlist = {};    // id -> true
+  let promo = null;     // { code, pct }
+  let activeCategory = 'All';
+  let searchTerm = '';
+  let sortMode = 'featured';
 
-  const grid = document.getElementById('productGrid');
-  PRODUCTS.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-art">${p.art}</div>
-      <div class="card-body">
-        <h3>${p.name}</h3>
-        <div class="desc">${p.desc}</div>
-        <div class="card-foot">
-          <span class="price">$${p.price.toFixed(2)}</span>
-          <button class="stamp-btn" data-id="${p.id}" aria-label="Add ${p.name} to bag">+</button>
+  try { cart = JSON.parse(localStorage.getItem('inkwell_cart') || '{}'); } catch(e) { cart = {}; }
+  try { wishlist = JSON.parse(localStorage.getItem('inkwell_wishlist') || '{}'); } catch(e) { wishlist = {}; }
+
+  const PROMO_CODES = { 'BOND10': 0.10, 'INKWELL15': 0.15 };
+
+  function saveCart(){ try{ localStorage.setItem('inkwell_cart', JSON.stringify(cart)); }catch(e){} }
+  function saveWishlist(){ try{ localStorage.setItem('inkwell_wishlist', JSON.stringify(wishlist)); }catch(e){} }
+
+  function stars(rating){
+    const full = Math.round(rating);
+    return '★'.repeat(full) + '☆'.repeat(5-full);
+  }
+
+  function stockInfo(stock){
+    if (stock <= 5) return { text:`Only ${stock} left`, cls:'low' };
+    return { text:'In stock', cls:'ok' };
+  }
+
+  /* ---------- Category pills ---------- */
+  const categories = ['All', ...new Set(PRODUCTS.map(p => p.category))];
+  const pillsWrap = document.getElementById('categoryPills');
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (cat === activeCategory ? ' active' : '');
+    btn.textContent = cat;
+    btn.dataset.cat = cat;
+    btn.addEventListener('click', () => {
+      activeCategory = cat;
+      document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+      renderGrid();
+    });
+    pillsWrap.appendChild(btn);
+  });
+
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchTerm = e.target.value.trim().toLowerCase();
+    renderGrid();
+  });
+  document.getElementById('sortSelect').addEventListener('change', e => {
+    sortMode = e.target.value;
+    renderGrid();
+  });
+
+  let showWishlistOnly = false;
+  document.getElementById('wishNav').addEventListener('click', () => {
+    showWishlistOnly = !showWishlistOnly;
+    document.getElementById('gridTitle').textContent = showWishlistOnly ? 'Your Wishlist' : 'The Collection';
+    document.getElementById('wishNav').style.opacity = showWishlistOnly ? '1' : '';
+    document.getElementById('wishNav').style.fontWeight = showWishlistOnly ? '600' : '';
+    renderGrid();
+    document.getElementById('shop').scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  /* ---------- Grid rendering ---------- */
+  function getFilteredProducts(){
+    let list = PRODUCTS.slice();
+    if (showWishlistOnly) list = list.filter(p => wishlist[p.id]);
+    if (activeCategory !== 'All') list = list.filter(p => p.category === activeCategory);
+    if (searchTerm) list = list.filter(p =>
+      p.name.toLowerCase().includes(searchTerm) ||
+      p.category.toLowerCase().includes(searchTerm) ||
+      p.desc.toLowerCase().includes(searchTerm)
+    );
+    switch(sortMode){
+      case 'price-asc': list.sort((a,b) => a.price - b.price); break;
+      case 'price-desc': list.sort((a,b) => b.price - a.price); break;
+      case 'rating-desc': list.sort((a,b) => b.rating - a.rating); break;
+      case 'name-asc': list.sort((a,b) => a.name.localeCompare(b.name)); break;
+    }
+    return list;
+  }
+
+  function renderGrid(){
+    const grid = document.getElementById('productGrid');
+    const list = getFilteredProducts();
+    document.getElementById('itemCountLabel').textContent = `${list.length} piece${list.length===1?'':'s'}`;
+
+    if (list.length === 0){
+      grid.innerHTML = `<div class="no-results">${showWishlistOnly ? "Nothing saved yet — tap the heart on anything you love." : "No pieces match that search."}</div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(p => {
+      const si = stockInfo(p.stock);
+      const isWished = !!wishlist[p.id];
+      return `
+      <div class="card" data-id="${p.id}">
+        <div class="card-art" data-open="${p.id}">
+          ${p.art}
+          <button class="wish-btn ${isWished ? 'active':''}" data-wish="${p.id}" aria-label="Toggle wishlist for ${p.name}">${isWished ? '♥' : '♡'}</button>
+          <span class="stock-badge ${si.cls}">${si.text}</span>
+        </div>
+        <div class="card-body">
+          <h3 data-open="${p.id}">${p.name}</h3>
+          <div class="rating"><span class="stars">${stars(p.rating)}</span> ${p.rating} (${p.reviews})</div>
+          <div class="desc">${p.desc}</div>
+          <div class="card-foot">
+            <span class="price">$${p.price.toFixed(2)}</span>
+            <div class="card-actions">
+              <button class="quickview-btn" data-open="${p.id}">Quick view</button>
+              <button class="stamp-btn" data-id="${p.id}" aria-label="Add ${p.name} to bag">+</button>
+            </div>
+          </div>
         </div>
       </div>
+    `;}).join('');
+  }
+
+  document.getElementById('productGrid').addEventListener('click', e => {
+    const addBtn = e.target.closest('.stamp-btn');
+    const wishBtn = e.target.closest('[data-wish]');
+    const openTarget = e.target.closest('[data-open]');
+
+    if (addBtn){
+      const id = addBtn.dataset.id;
+      addToCart(id, 1);
+      addBtn.classList.remove('stamped');
+      void addBtn.offsetWidth;
+      addBtn.classList.add('stamped');
+      addBtn.textContent = '✓';
+      setTimeout(() => { addBtn.textContent = '+'; addBtn.classList.remove('stamped'); }, 700);
+      const p = PRODUCTS.find(x => x.id === id);
+      showToast(`Added ${p.name} to your bag`);
+      return;
+    }
+    if (wishBtn){
+      const id = wishBtn.dataset.wish;
+      toggleWishlist(id);
+      return;
+    }
+    if (openTarget){
+      openQuickView(openTarget.dataset.open);
+    }
+  });
+
+  function toggleWishlist(id){
+    if (wishlist[id]) delete wishlist[id]; else wishlist[id] = true;
+    saveWishlist();
+    updateWishCount();
+    renderGrid();
+    if (modalOverlay.classList.contains('open') && currentModalId === id) openQuickView(id);
+  }
+  function updateWishCount(){
+    document.getElementById('wishCount').textContent = Object.keys(wishlist).length;
+  }
+
+  function addToCart(id, qty){
+    cart[id] = (cart[id] || 0) + qty;
+    saveCart();
+    renderCart();
+  }
+
+  /* ---------- Quick view modal ---------- */
+  const modalOverlay = document.getElementById('modalOverlay');
+  let currentModalId = null;
+  let modalQty = 1;
+
+  function openQuickView(id){
+    const p = PRODUCTS.find(x => x.id === id);
+    currentModalId = id;
+    modalQty = 1;
+    document.getElementById('modalArt').textContent = p.art;
+    const si = stockInfo(p.stock);
+    const isWished = !!wishlist[p.id];
+    document.getElementById('modalBody').innerHTML = `
+      <h3>${p.name}</h3>
+      <div class="rating"><span class="stars">${stars(p.rating)}</span> ${p.rating} (${p.reviews} reviews)</div>
+      <div class="price">$${p.price.toFixed(2)}</div>
+      <div class="desc-full">${p.desc}</div>
+      <div class="modal-stock ${si.cls}">${si.text}</div>
+      <div class="modal-qty">
+        <button id="mqDec" aria-label="Decrease quantity">−</button>
+        <span id="mqVal">1</span>
+        <button id="mqInc" aria-label="Increase quantity">+</button>
+        <button class="quickview-btn" id="mqWish" style="margin-left:auto;">${isWished ? '♥ Saved' : '♡ Save'}</button>
+      </div>
+      <button class="modal-add" id="modalAddBtn">Add to Bag — $${p.price.toFixed(2)}</button>
     `;
-    grid.appendChild(card);
-  });
+    document.getElementById('mqDec').addEventListener('click', () => { modalQty = Math.max(1, modalQty-1); syncModalQty(p); });
+    document.getElementById('mqInc').addEventListener('click', () => { modalQty = Math.min(p.stock, modalQty+1); syncModalQty(p); });
+    document.getElementById('mqWish').addEventListener('click', () => toggleWishlist(p.id));
+    document.getElementById('modalAddBtn').addEventListener('click', () => {
+      addToCart(p.id, modalQty);
+      showToast(`Added ${modalQty} × ${p.name} to your bag`);
+      closeModal();
+      openDrawer();
+    });
+    modalOverlay.classList.add('open');
+  }
+  function syncModalQty(p){
+    document.getElementById('mqVal').textContent = modalQty;
+    document.getElementById('modalAddBtn').textContent = `Add to Bag — $${(p.price*modalQty).toFixed(2)}`;
+  }
+  function closeModal(){ modalOverlay.classList.remove('open'); currentModalId = null; }
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 
-  grid.addEventListener('click', e => {
-    const btn = e.target.closest('.stamp-btn');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    cart[id] = (cart[id] || 0) + 1;
-    save();
-    render();
-    btn.classList.remove('stamped');
-    void btn.offsetWidth;
-    btn.classList.add('stamped');
-    setTimeout(() => btn.textContent = '✓', 0);
-    setTimeout(() => { btn.textContent = '+'; btn.classList.remove('stamped'); }, 700);
-    openDrawer();
-  });
+  /* ---------- Toast ---------- */
+  let toastTimer = null;
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
 
+  /* ---------- Cart drawer ---------- */
   const overlay = document.getElementById('overlay');
   const drawer = document.getElementById('cartDrawer');
-  const openCartBtn = document.getElementById('openCart');
-  const closeCartBtn = document.getElementById('closeCart');
-
-  function openDrawer(){
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-  }
-  function closeDrawer(){
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-  }
-  openCartBtn.addEventListener('click', openDrawer);
-  closeCartBtn.addEventListener('click', closeDrawer);
+  document.getElementById('openCart').addEventListener('click', openDrawer);
+  document.getElementById('closeCart').addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeDrawer(); closeModal(); } });
 
-  function save(){
-    try { localStorage.setItem('inkwell_cart', JSON.stringify(cart)); } catch(e) {}
-  }
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); }
 
-  function render(){
+  function renderCart(){
     const items = Object.entries(cart).filter(([,qty]) => qty > 0);
     const drawerItems = document.getElementById('drawerItems');
-    const countEl = document.getElementById('cart-count');
     const totalQty = items.reduce((sum,[,q]) => sum + q, 0);
-    countEl.textContent = totalQty;
+    document.getElementById('cart-count').textContent = totalQty;
 
     if (items.length === 0){
       drawerItems.innerHTML = `<div class="empty-note">Your bag is empty. Add something worth writing home about.</div>`;
@@ -425,10 +782,19 @@
     }
 
     const subtotal = items.reduce((sum,[id,qty]) => sum + PRODUCTS.find(p=>p.id===id).price * qty, 0);
-    const shipping = subtotal === 0 ? 0 : (subtotal >= 75 ? 0 : 6.5);
-    const total = subtotal + shipping;
+    const discount = promo ? subtotal * promo.pct : 0;
+    const afterDiscount = subtotal - discount;
+    const shipping = subtotal === 0 ? 0 : (afterDiscount >= 75 ? 0 : 6.5);
+    const total = afterDiscount + shipping;
 
     document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    const discountRow = document.getElementById('discountRow');
+    if (discount > 0){
+      discountRow.style.display = 'flex';
+      document.getElementById('discountAmt').textContent = `−$${discount.toFixed(2)}`;
+    } else {
+      discountRow.style.display = 'none';
+    }
     document.getElementById('shipping').textContent = shipping === 0 ? (subtotal === 0 ? '$0.00' : 'Free') : `$${shipping.toFixed(2)}`;
     document.getElementById('grandTotal').textContent = `$${total.toFixed(2)}`;
     document.getElementById('checkoutBtn').disabled = items.length === 0;
@@ -441,19 +807,41 @@
     if (e.target.classList.contains('inc')) cart[id]++;
     if (e.target.classList.contains('dec')) cart[id] = Math.max(0, cart[id]-1);
     if (e.target.classList.contains('remove-btn')) delete cart[id];
-    save();
-    render();
+    saveCart();
+    renderCart();
+  });
+
+  document.getElementById('promoApply').addEventListener('click', () => {
+    const input = document.getElementById('promoInput');
+    const code = input.value.trim().toUpperCase();
+    const msg = document.getElementById('promoMsg');
+    if (!code){ msg.textContent = ''; return; }
+    if (PROMO_CODES[code]){
+      promo = { code, pct: PROMO_CODES[code] };
+      msg.textContent = `"${code}" applied — ${Math.round(promo.pct*100)}% off`;
+      msg.className = 'promo-msg ok';
+    } else {
+      promo = null;
+      msg.textContent = 'That code isn\'t valid.';
+      msg.className = 'promo-msg bad';
+    }
+    renderCart();
   });
 
   document.getElementById('checkoutBtn').addEventListener('click', () => {
     cart = {};
-    save();
-    render();
-    alert('Order placed — a confirmation will arrive by carrier pigeon (or email).');
+    promo = null;
+    document.getElementById('promoInput').value = '';
+    document.getElementById('promoMsg').textContent = '';
+    saveCart();
+    renderCart();
+    showToast('Order placed — confirmation on its way');
     closeDrawer();
   });
 
-  render();
+  renderGrid();
+  renderCart();
+  updateWishCount();
 </script>
 
 </body>
