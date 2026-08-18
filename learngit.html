@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & GitHub in One Hour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151a;
+    --bg-alt:#171b22;
+    --surface:#1c212b;
+    --surface-2:#232936;
+    --line:#2a3141;
+    --line-soft:#20252f;
+    --ink:#e9e7de;
+    --ink-dim:#9aa0ad;
+    --ink-faint:#666d7b;
+    --green:#6ccb5f;
+    --green-dim:#3d5c37;
+    --green-bg:#182a17;
+    --red:#e5534b;
+    --red-dim:#5c3230;
+    --red-bg:#2a1615;
+    --amber:#d4a72c;
+    --amber-bg:#2a2311;
+    --blue:#5b9dd9;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'IBM Plex Sans', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    font-size:16px;
+  }
+  ::selection{background:var(--green-dim); color:var(--ink);}
+
+  a{color:var(--green); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  code, .mono{font-family:var(--mono);}
+
+  /* ===== TOP PROGRESS BAR ===== */
+  #progress-bar{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--green), var(--amber));
+    z-index:100; transition:width .1s linear;
+  }
+
+  /* ===== LAYOUT ===== */
+  .shell{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;}
+  }
+
+  /* ===== SIDEBAR / COMMIT GRAPH NAV ===== */
+  nav.graph{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:28px 0 40px 28px;
+    border-right:1px solid var(--line-soft);
+    scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+  }
+  @media (max-width:900px){
+    nav.graph{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line-soft); padding:20px 20px 8px;}
+  }
+  nav.graph::-webkit-scrollbar{width:6px;}
+  nav.graph::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+
+  .brand{
+    font-family:var(--mono); font-weight:700; font-size:14px;
+    letter-spacing:.04em; color:var(--ink);
+    margin-bottom:4px;
+  }
+  .brand span{color:var(--green);}
+  .brand-sub{
+    font-family:var(--mono); font-size:11px; color:var(--ink-faint);
+    margin-bottom:28px;
+  }
+  @media (max-width:900px){ .brand-sub{margin-bottom:14px;} }
+
+  .commit-list{position:relative; padding-left:22px;}
+  .commit-list::before{
+    content:''; position:absolute; left:5px; top:6px; bottom:6px;
+    width:1px; background:var(--line);
+  }
+  .commit{
+    position:relative; display:block; padding:9px 14px 9px 0;
+    cursor:pointer; border-radius:0 6px 6px 0;
+  }
+  .commit:hover{background:var(--surface);}
+  .commit::before{
+    content:''; position:absolute; left:-22px; top:14px;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--line);
+    transition:all .2s;
+  }
+  .commit.active::before{
+    border-color:var(--green); background:var(--green);
+    box-shadow:0 0 0 3px var(--green-bg);
+  }
+  .commit-hash{
+    font-family:var(--mono); font-size:11px; color:var(--amber);
+    display:block; margin-bottom:2px;
+  }
+  .commit-msg{
+    font-size:13.5px; color:var(--ink-dim); font-weight:500;
+    display:block; line-height:1.4;
+  }
+  .commit.active .commit-msg{color:var(--ink);}
+  .commit-time{
+    font-family:var(--mono); font-size:10.5px; color:var(--ink-faint);
+    display:block; margin-top:3px;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main{padding:60px 56px 120px; min-width:0;}
+  @media (max-width:900px){ main{padding:36px 20px 80px;} }
+
+  .hero{
+    padding-bottom:56px; margin-bottom:56px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .hero-eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--green);
+    letter-spacing:.08em; text-transform:uppercase;
+    display:flex; align-items:center; gap:8px; margin-bottom:18px;
+  }
+  .hero-eyebrow::before{content:'●'; color:var(--red); font-size:10px;}
+  .hero-eyebrow::after{content:''; flex:0 0 8px; height:8px; border-radius:50%; background:var(--amber); margin-left:-2px;}
+  .hero h1{
+    font-family:var(--mono); font-weight:800; font-size:44px;
+    line-height:1.15; color:var(--ink); margin-bottom:20px;
+    letter-spacing:-.01em;
+  }
+  @media (max-width:600px){ .hero h1{font-size:32px;} }
+  .hero h1 .diff-add{color:var(--green);}
+  .hero h1 .diff-del{color:var(--red); text-decoration:line-through; text-decoration-color:var(--red-dim); opacity:.55;}
+  .hero p.lede{
+    font-size:17px; color:var(--ink-dim); max-width:640px; margin-bottom:28px;
+  }
+  .hero-meta{display:flex; gap:28px; flex-wrap:wrap;}
+  .meta-item{font-family:var(--mono); font-size:12.5px; color:var(--ink-faint);}
+  .meta-item b{color:var(--ink); font-weight:600;}
+
+  section.chapter{ margin-bottom:72px; scroll-margin-top:30px; }
+  .chapter-head{
+    display:flex; align-items:baseline; gap:14px; margin-bottom:6px;
+    flex-wrap:wrap;
+  }
+  .chapter-num{
+    font-family:var(--mono); font-size:13px; color:var(--amber);
+    background:var(--amber-bg); border:1px solid var(--green-dim);
+    border-color:#3a3320; padding:2px 9px; border-radius:4px;
+  }
+  .chapter-head h2{
+    font-family:var(--mono); font-size:26px; font-weight:700; color:var(--ink);
+  }
+  .chapter-time{
+    font-family:var(--mono); font-size:12px; color:var(--ink-faint); margin-left:auto;
+  }
+  .chapter-dek{color:var(--ink-dim); font-size:15px; margin:14px 0 26px; max-width:680px;}
+
+  h3{
+    font-family:var(--mono); font-size:17px; font-weight:600; color:var(--ink);
+    margin:30px 0 12px;
+  }
+  p{color:var(--ink-dim); margin-bottom:14px; max-width:700px;}
+  p b, li b{color:var(--ink); font-weight:600;}
+  ul, ol{color:var(--ink-dim); margin:0 0 16px 22px; max-width:680px;}
+  li{margin-bottom:6px;}
+
+  /* callouts */
+  .callout{
+    border-left:3px solid var(--green); background:var(--surface);
+    padding:14px 18px; border-radius:0 8px 8px 0; margin:18px 0; max-width:700px;
+  }
+  .callout.warn{border-left-color:var(--red);}
+  .callout-label{
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--green); display:block; margin-bottom:6px;
+  }
+  .callout.warn .callout-label{color:var(--red);}
+  .callout p{margin-bottom:0; font-size:14.5px;}
+
+  /* terminal blocks */
+  .terminal{
+    background:var(--bg-alt); border:1px solid var(--line);
+    border-radius:10px; overflow:hidden; margin:16px 0 22px; max-width:700px;
+  }
+  .terminal-head{
+    display:flex; align-items:center; gap:6px;
+    padding:9px 14px; background:var(--surface-2); border-bottom:1px solid var(--line);
+  }
+  .dot{width:9px; height:9px; border-radius:50%;}
+  .dot.r{background:#e5534b;} .dot.y{background:#d4a72c;} .dot.g{background:#3fb950;}
+  .terminal-title{
+    font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-left:8px;
+  }
+  .terminal-body{padding:14px 18px; font-family:var(--mono); font-size:13.5px; overflow-x:auto;}
+  .terminal-body .ln{display:block; white-space:pre; padding:2px 0;}
+  .prompt{color:var(--green);}
+  .cmd{color:var(--ink);}
+  .out{color:var(--ink-faint);}
+  .out.add{color:var(--green);}
+  .out.del{color:var(--red);}
+  .out.hl{color:var(--amber);}
+  .comment{color:var(--ink-faint); font-style:italic;}
+
+  /* single inline command chip */
+  .chip{
+    font-family:var(--mono); font-size:13px; background:var(--surface-2);
+    border:1px solid var(--line); color:var(--green); padding:2px 8px;
+    border-radius:5px; white-space:nowrap;
+  }
+
+  /* comparison table */
+  table{
+    width:100%; max-width:700px; border-collapse:collapse; margin:18px 0 26px;
+    font-size:14px;
+  }
+  th, td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--line-soft); }
+  th{ font-family:var(--mono); font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint); font-weight:500; }
+  td{color:var(--ink-dim);}
+  td:first-child, th:first-child{color:var(--ink); font-weight:600;}
+  tr:last-child td{border-bottom:none;}
+
+  /* stage diagram */
+  .stages{
+    display:flex; align-items:center; gap:0; flex-wrap:wrap; margin:20px 0 26px; max-width:700px;
+  }
+  .stage-box{
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:14px 18px; flex:1; min-width:150px;
+  }
+  .stage-box .st-title{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); margin-bottom:4px;}
+  .stage-box .st-sub{font-size:12px; color:var(--ink-faint);}
+  .stage-arrow{
+    font-family:var(--mono); color:var(--ink-faint); font-size:13px; padding:0 10px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .stage-arrow .cmdlabel{color:var(--green); font-size:11px;}
+  @media (max-width:640px){ .stages{flex-direction:column; align-items:stretch;} .stage-arrow{flex-direction:row; justify-content:center; padding:6px 0;} }
+
+  /* branch diagram (css only) */
+  .branch-diagram{
+    background:var(--bg-alt); border:1px solid var(--line); border-radius:10px;
+    padding:26px 22px; margin:20px 0 26px; max-width:700px; overflow-x:auto;
+  }
+  .branch-row{display:flex; align-items:center; gap:0; height:34px; position:relative; min-width:480px;}
+  .branch-row .track-label{
+    font-family:var(--mono); font-size:11px; color:var(--ink-faint); width:90px; flex:0 0 90px;
+  }
+  .branch-row .track{ flex:1; position:relative; height:2px; background:var(--line);}
+  .commit-dot{
+    width:11px; height:11px; border-radius:50%; position:absolute; top:50%; transform:translate(-50%,-50%);
+    border:2px solid var(--bg-alt);
+  }
+  .commit-dot.g{background:var(--green);}
+  .commit-dot.a{background:var(--amber);}
+  .commit-dot.b{background:var(--blue);}
+
+  /* quiz / checklist */
+  .checklist{list-style:none; margin:0 0 20px; max-width:680px;}
+  .checklist li{
+    display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; color:var(--ink-dim); font-size:14.5px;
+  }
+  .checklist li::before{
+    content:'✓'; color:var(--green); font-family:var(--mono); font-weight:700; flex:0 0 auto;
+    background:var(--green-bg); width:18px; height:18px; border-radius:4px;
+    display:flex; align-items:center; justify-content:center; font-size:11px; margin-top:1px;
+  }
+
+  /* cheat sheet grid */
+  .cheat-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+    gap:14px; margin:20px 0 10px;
+  }
+  .cheat-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px 18px;
+  }
+  .cheat-card h4{
+    font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--amber); margin-bottom:10px;
+  }
+  .cheat-card .row{
+    display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-top:1px solid var(--line-soft);
+    font-size:13px;
+  }
+  .cheat-card .row:first-of-type{border-top:none;}
+  .cheat-card .row code{color:var(--green); flex:0 0 auto;}
+  .cheat-card .row span{color:var(--ink-faint); text-align:right;}
+
+  /* footer / end */
+  .end-card{
+    margin-top:80px; padding:32px; border:1px solid var(--line); border-radius:14px;
+    background:linear-gradient(160deg, var(--surface), var(--bg-alt));
+    text-align:center;
+  }
+  .end-card h3{font-size:20px; margin-bottom:10px;}
+  .end-card p{margin:0 auto 4px; color:var(--ink-dim);}
+
+  /* mobile toggle */
+  .mobile-toggle{
+    display:none; font-family:var(--mono); font-size:12px; color:var(--ink-dim);
+    background:var(--surface); border:1px solid var(--line); padding:8px 12px;
+    border-radius:6px; margin-top:14px; cursor:pointer; width:100%; text-align:left;
+  }
+  @media (max-width:900px){
+    .mobile-toggle{display:block;}
+    .commit-list{display:none;}
+    .commit-list.open{display:block;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="shell">
+  <!-- SIDEBAR: commit graph nav -->
+  <nav class="graph">
+    <div class="brand">git<span>log</span> --oneline</div>
+    <div class="brand-sub">// your 60-minute learning path</div>
+    <button class="mobile-toggle" id="navToggle">☰ show chapters</button>
+    <div class="commit-list" id="commitList">
+      <a class="commit" data-target="ch-intro"><span class="commit-hash">a1f9c3e</span><span class="commit-msg">Welcome & how this works</span><span class="commit-time">0:00</span></a>
+      <a class="commit" data-target="ch-vcs"><span class="commit-hash">b2e771d</span><span class="commit-msg">What is version control</span><span class="commit-time">0:03</span></a>
+      <a class="commit" data-target="ch-gitgithub"><span class="commit-hash">c934a02</span><span class="commit-msg">Git vs GitHub</span><span class="commit-time">0:07</span></a>
+      <a class="commit" data-target="ch-setup"><span class="commit-hash">d0184be</span><span class="commit-msg">Install & first-time setup</span><span class="commit-time">0:12</span></a>
+      <a class="commit" data-target="ch-repo"><span class="commit-hash">e5f22c9</span><span class="commit-msg">Turning a folder into a repo</span><span class="commit-time">0:16</span></a>
+      <a class="commit" data-target="ch-threestages"><span class="commit-hash">f61b7aa</span><span class="commit-msg">The three areas of Git</span><span class="commit-time">0:20</span></a>
+      <a class="commit" data-target="ch-commands"><span class="commit-hash">1a7de44</span><span class="commit-msg">Core commands in action</span><span class="commit-time">0:25</span></a>
+      <a class="commit" data-target="ch-history"><span class="commit-hash">2b8c115</span><span class="commit-msg">Reading history: log & diff</span><span class="commit-time">0:32</span></a>
+      <a class="commit" data-target="ch-branch"><span class="commit-hash">3c9f226</span><span class="commit-msg">Branching & merging</span><span class="commit-time">0:36</span></a>
+      <a class="commit" data-target="ch-conflict"><span class="commit-hash">4da0337</span><span class="commit-msg">Merge conflicts</span><span class="commit-time">0:42</span></a>
+      <a class="commit" data-target="ch-remote"><span class="commit-hash">5eb1448</span><span class="commit-msg">Connecting to GitHub</span><span class="commit-time">0:46</span></a>
+      <a class="commit" data-target="ch-undo"><span class="commit-hash">6fc2559</span><span class="commit-msg">Undoing mistakes</span><span class="commit-time">0:52</span></a>
+      <a class="commit" data-target="ch-practices"><span class="commit-hash">70d366a</span><span class="commit-msg">Best practices</span><span class="commit-time">0:55</span></a>
+      <a class="commit" data-target="ch-cheatsheet"><span class="commit-hash">81e477b</span><span class="commit-msg">Cheat sheet (HEAD)</span><span class="commit-time">0:58</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="hero" id="ch-intro">
+      <div class="hero-eyebrow">main branch · 14 commits · 1 hour</div>
+      <h1>Git & GitHub,<br><span class="diff-del">from confusing</span> <span class="diff-add">to confident.</span></h1>
+      <p class="lede">A self-contained crash course that takes you from "what even is a repository" to comfortably pushing your own projects to GitHub — in about one hour, at your own pace. Follow the commit log on the left, top to bottom.</p>
+      <div class="hero-meta">
+        <div class="meta-item"><b>14</b> chapters</div>
+        <div class="meta-item"><b>~60</b> min total</div>
+        <div class="meta-item"><b>0</b> prior experience needed</div>
+      </div>
+    </div>
+
+    <!-- 1. VERSION CONTROL -->
+    <section class="chapter" id="ch-vcs">
+      <div class="chapter-head">
+        <span class="chapter-num">01</span>
+        <h2>What is version control?</h2>
+        <span class="chapter-time">0:00 – 0:03</span>
+      </div>
+      <p class="chapter-dek">Before Git makes sense, you need to understand the problem it solves.</p>
+
+      <p>Imagine you're writing an essay. You save it as <code>essay.docx</code>. The next day you make big changes and want to keep the old version too, so you save a copy: <code>essay_final.docx</code>. Then you edit again: <code>essay_final_v2.docx</code>, <code>essay_final_REALLY.docx</code>...</p>
+
+      <p>This is what people did before version control — and it breaks down fast. You lose track of what changed, why, and which file is actually current.</p>
+
+      <div class="callout">
+        <span class="callout-label">Definition</span>
+        <p><b>Version control</b> is a system that automatically records every change to your files over time — what changed, when, and why — so you can view, compare, or restore any previous version without manually renaming files.</p>
+      </div>
+
+      <p><b>Git</b> is the most widely used version control system in the world. It was created in 2005 by Linus Torvalds (also the creator of Linux) to manage the Linux kernel's source code.</p>
+    </section>
+
+    <!-- 2. GIT VS GITHUB -->
+    <section class="chapter" id="ch-gitgithub">
+      <div class="chapter-head">
+        <span class="chapter-num">02</span>
+        <h2>Git vs GitHub</h2>
+        <span class="chapter-time">0:03 – 0:07</span>
+      </div>
+      <p class="chapter-dek">The single most confusing thing for beginners — and it's simpler than it sounds.</p>
+
+      <p><b>Git</b> is a tool installed on your computer. It tracks changes to files in a folder. It works completely offline and needs no internet connection.</p>
+      <p><b>GitHub</b> is a website that hosts Git repositories online. It adds a place to store your code in the cloud, share it with others, and collaborate through features like Pull Requests and Issues.</p>
+
+      <table>
+        <tr><th></th><th>Git</th><th>GitHub</th></tr>
+        <tr><td>What it is</td><td>Software on your machine</td><td>A cloud platform</td></tr>
+        <tr><td>Works offline</td><td>Yes</td><td>No — needs internet</td></tr>
+        <tr><td>Job</td><td>Tracks changes, history</td><td>Stores & shares repos online</td></tr>
+        <tr><td>Alternatives</td><td>Mercurial, SVN</td><td>GitLab, Bitbucket</td></tr>
+      </table>
+
+      <div class="callout">
+        <span class="callout-label">Mental model</span>
+        <p>Git is the engine in your car. GitHub is the public parking garage where you can leave your car for others to see, borrow, or work on with you.</p>
+      </div>
+    </section>
+
+    <!-- 3. SETUP -->
+    <section class="chapter" id="ch-setup">
+      <div class="chapter-head">
+        <span class="chapter-num">03</span>
+        <h2>Install & first-time setup</h2>
+        <span class="chapter-time">0:07 – 0:12</span>
+      </div>
+      <p class="chapter-dek">Do this once per computer, and you're set for life.</p>
+
+      <h3>1. Install Git</h3>
+      <ul>
+        <li><b>Windows:</b> download and run the installer from <a href="https://git-scm.com" target="_blank" rel="noopener">git-scm.com</a> — this gives you Git Bash, the terminal you've been using.</li>
+        <li><b>Mac:</b> open Terminal and type <span class="chip">git --version</span> — it will prompt you to install if missing.</li>
+        <li><b>Linux:</b> <span class="chip">sudo apt install git</span> (Debian/Ubuntu) or your distro's equivalent.</li>
+      </ul>
+
+      <h3>2. Tell Git who you are</h3>
+      <p>Every commit is stamped with a name and email. Set these once:</p>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">bash</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git config --global user.name "Your Name"</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git config --global user.email "you@example.com"</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git config --list</span>  <span class="comment"># verify it saved</span></span>
+        </div>
+      </div>
+
+      <h3>3. Create a GitHub account</h3>
+      <p>Sign up free at <a href="https://github.com" target="_blank" rel="noopener">github.com</a>. This is where your repos will live online.</p>
+    </section>
+
+    <!-- 4. FOLDER TO REPO -->
+    <section class="chapter" id="ch-repo">
+      <div class="chapter-head">
+        <span class="chapter-num">04</span>
+        <h2>Turning a folder into a repo</h2>
+        <span class="chapter-time">0:12 – 0:16</span>
+      </div>
+      <p class="chapter-dek">How Git actually starts tracking a project.</p>
+
+      <p>Open a terminal inside any project folder and check what's there:</p>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">ls -a</span></span>
+<span class="ln"><span class="out">./  ../</span></span>
+<span class="ln comment"># just a plain, untracked folder</span>
+        </div>
+      </div>
+
+      <p>Now initialize it as a Git repository:</p>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git init</span></span>
+<span class="ln"><span class="out add">Initialized empty Git repository in ~/Test/.git/</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">ls -a</span></span>
+<span class="ln"><span class="out">./  ../  <span class="out hl">.git/</span></span></span>
+<span class="ln comment"># the hidden .git/ folder is where ALL history lives</span>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Good to know</span>
+        <p>The <code>.git</code> folder is the entire database of your project's history. Delete it, and you lose all Git tracking — the files themselves stay, but the history is gone forever.</p>
+      </div>
+    </section>
+
+    <!-- 5. THREE STAGES -->
+    <section class="chapter" id="ch-threestages">
+      <div class="chapter-head">
+        <span class="chapter-num">05</span>
+        <h2>The three areas of Git</h2>
+        <span class="chapter-time">0:16 – 0:20</span>
+      </div>
+      <p class="chapter-dek">This one idea unlocks everything else. Every file lives in one of three places.</p>
+
+      <div class="stages">
+        <div class="stage-box">
+          <div class="st-title">Working directory</div>
+          <div class="st-sub">Files you're editing right now</div>
+        </div>
+        <div class="stage-arrow"><span>→</span><span class="cmdlabel">git add</span></div>
+        <div class="stage-box">
+          <div class="st-title">Staging area</div>
+          <div class="st-sub">Changes marked "ready to save"</div>
+        </div>
+        <div class="stage-arrow"><span>→</span><span class="cmdlabel">git commit</span></div>
+        <div class="stage-box">
+          <div class="st-title">Repository</div>
+          <div class="st-sub">Permanently saved snapshot</div>
+        </div>
+      </div>
+
+      <p>Think of the staging area like a shopping cart. You <b>add</b> items to it (<code>git add</code>), review what's inside (<code>git status</code>), and only when you're happy do you "check out" — which in Git terms is <b>committing</b> (<code>git commit</code>).</p>
+
+      <div class="callout">
+        <span class="callout-label">Why staging exists</span>
+        <p>It lets you commit only <i>some</i> of your changes at a time. Changed five files but only two are related? Stage and commit just those two, with a message that actually describes them.</p>
+      </div>
+    </section>
+
+    <!-- 6. CORE COMMANDS -->
+    <section class="chapter" id="ch-commands">
+      <div class="chapter-head">
+        <span class="chapter-num">06</span>
+        <h2>Core commands in action</h2>
+        <span class="chapter-time">0:20 – 0:32</span>
+      </div>
+      <p class="chapter-dek">A full walkthrough, start to finish, on a real example.</p>
+
+      <h3><code>git status</code> — what's going on?</h3>
+      <p>Your most-used command. Run it constantly — it never breaks anything, it just reports.</p>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test (master)</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></span>
+<span class="ln"><span class="out">On branch master</span></span>
+<span class="ln"><span class="out">No commits yet</span></span>
+<span class="ln"></span>
+<span class="ln"><span class="out">Untracked files:</span></span>
+<span class="ln"><span class="out del">  index.html</span></span>
+        </div>
+      </div>
+
+      <h3><code>git add</code> — stage your changes</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test (master)</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git add index.html</span>  <span class="comment"># stage ONE file</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git add .</span>            <span class="comment"># stage ALL changed files</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git add --all</span>       <span class="comment"># same as above, explicit form</span></span>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Common typo</span>
+        <p><code>git add.</code> and <code>git .add</code> both fail — Git reads them as unknown commands. The space matters: it's <code>git</code> <code>add</code> <code>.</code> — three separate words.</p>
+      </div>
+
+      <h3><code>git commit</code> — save the snapshot</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test (master)</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git commit -m "Add homepage markup"</span></span>
+<span class="ln"><span class="out add">[master (root-commit) a1f9c3e] Add homepage markup</span></span>
+<span class="ln"><span class="out"> 1 file changed, 12 insertions(+)</span></span>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Common mistake</span>
+        <p>The message MUST be in quotes: <code>git commit -m "message"</code>. Without quotes, Git treats each word as a separate file name and throws <code>pathspec did not match any files</code>.</p>
+      </div>
+
+      <h3>Writing good commit messages</h3>
+      <div class="cheat-grid" style="margin-top:14px;">
+        <div class="cheat-card">
+          <h4>✓ Good</h4>
+          <div class="row"><code>"Add login form validation"</code></div>
+          <div class="row"><code>"Fix cart total rounding bug"</code></div>
+        </div>
+        <div class="cheat-card">
+          <h4>✗ Avoid</h4>
+          <div class="row"><code>"changes"</code></div>
+          <div class="row"><code>"fixed stuff again"</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. HISTORY -->
+    <section class="chapter" id="ch-history">
+      <div class="chapter-head">
+        <span class="chapter-num">07</span>
+        <h2>Reading history: log & diff</h2>
+        <span class="chapter-time">0:32 – 0:36</span>
+      </div>
+      <p class="chapter-dek">Once you've made a few commits, here's how to look back at them.</p>
+
+      <h3><code>git log</code> — the full history</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test (master)</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git log</span></span>
+<span class="ln"><span class="out hl">commit a1f9c3e...</span></span>
+<span class="ln"><span class="out">Author: Your Name &lt;you@example.com&gt;</span></span>
+<span class="ln"><span class="out">Date:   Tue Aug 18 2026</span></span>
+<span class="ln"></span>
+<span class="ln"><span class="out">    Add homepage markup</span></span>
+        </div>
+      </div>
+      <p>Tip: <span class="chip">git log --oneline</span> compresses each commit into a single line — much easier to scan.</p>
+
+      <h3><code>git diff</code> — what actually changed</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">~/Test (master)</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git diff</span></span>
+<span class="ln"><span class="out del">- console.log("Hello")</span></span>
+<span class="ln"><span class="out add">+ console.log("Hello World")</span></span>
+        </div>
+      </div>
+      <p><b>Rule of thumb:</b> <code>git diff</code> = "what did I just change?" · <code>git log</code> = "what have I done over time?"</p>
+    </section>
+
+    <!-- 8. BRANCHING -->
+    <section class="chapter" id="ch-branch">
+      <div class="chapter-head">
+        <span class="chapter-num">08</span>
+        <h2>Branching & merging</h2>
+        <span class="chapter-time">0:36 – 0:42</span>
+      </div>
+      <p class="chapter-dek">Work on new ideas without touching the code that already works.</p>
+
+      <p>A <b>branch</b> is an independent line of development. The default branch is usually called <code>main</code> or <code>master</code>. When you want to build a new feature, you spin off a new branch, work there safely, then merge it back once it's done.</p>
+
+      <div class="branch-diagram">
+        <div class="branch-row">
+          <span class="track-label">main</span>
+          <div class="track">
+            <div class="commit-dot g" style="left:5%"></div>
+            <div class="commit-dot g" style="left:30%"></div>
+            <div class="commit-dot g" style="left:90%"></div>
+          </div>
+        </div>
+        <div class="branch-row">
+          <span class="track-label">feature/nav</span>
+          <div class="track" style="background:var(--line-soft)">
+            <div class="commit-dot a" style="left:45%"></div>
+            <div class="commit-dot a" style="left:70%"></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:-12px; font-size:13px; color:var(--ink-faint);">The feature branch splits off, gets its own commits, then merges back into main.</p>
+
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">bash</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git branch</span>                    <span class="comment"># list branches</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git checkout -b feature/navbar</span> <span class="comment"># create + switch, in one step</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git add . && git commit -m "Add navbar"</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git checkout main</span>             <span class="comment"># switch back</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git merge feature/navbar</span>      <span class="comment"># bring the work into main</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CONFLICTS -->
+    <section class="chapter" id="ch-conflict">
+      <div class="chapter-head">
+        <span class="chapter-num">09</span>
+        <h2>Merge conflicts</h2>
+        <span class="chapter-time">0:42 – 0:46</span>
+      </div>
+      <p class="chapter-dek">What happens when two branches change the same line — and how to fix it calmly.</p>
+
+      <p>A conflict happens when Git can't automatically decide which version of a line to keep. It pauses the merge and marks the file for you to resolve by hand.</p>
+
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">app.js</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="out hl">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span></span>
+<span class="ln"><span class="cmd">console.log("Version A")</span></span>
+<span class="ln"><span class="out hl">=======</span></span>
+<span class="ln"><span class="cmd">console.log("Version B")</span></span>
+<span class="ln"><span class="out hl">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/logging</span></span>
+        </div>
+      </div>
+
+      <ol>
+        <li>Open the file — Git marks conflicting sections with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>.</li>
+        <li>Decide which version to keep (or combine both).</li>
+        <li>Delete the marker lines entirely.</li>
+        <li>Save, then <code>git add .</code> and <code>git commit</code> to finish the merge.</li>
+      </ol>
+
+      <div class="callout">
+        <span class="callout-label">Don't panic</span>
+        <p>Conflicts are a normal, expected part of collaborating — not a sign something is broken. Take your time reading both versions before choosing.</p>
+      </div>
+    </section>
+
+    <!-- 10. REMOTE -->
+    <section class="chapter" id="ch-remote">
+      <div class="chapter-head">
+        <span class="chapter-num">10</span>
+        <h2>Connecting to GitHub</h2>
+        <span class="chapter-time">0:46 – 0:52</span>
+      </div>
+      <p class="chapter-dek">Getting your local repo online — and keeping it in sync.</p>
+
+      <h3>1. Create a repository on GitHub</h3>
+      <p>On github.com, click <b>New repository</b>, name it, and don't initialize it with a README (you already have local commits).</p>
+
+      <h3>2. Link your local folder to it</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">bash</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git remote add origin https://github.com/you/repo.git</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git branch -M main</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git push -u origin main</span></span>
+<span class="ln"><span class="out add">Enumerating objects... done. → pushed to GitHub</span></span>
+        </div>
+      </div>
+      <p><code>origin</code> is just a nickname Git gives your remote URL — you'll type "origin" instead of the full link from now on.</p>
+
+      <h3>3. Daily sync</h3>
+      <div class="terminal">
+        <div class="terminal-head"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="terminal-title">bash</div></div>
+        <div class="terminal-body">
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git push</span>            <span class="comment"># send your new commits up</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git pull</span>            <span class="comment"># bring teammates' commits down</span></span>
+<span class="ln"><span class="prompt">$</span> <span class="cmd">git clone &lt;url&gt;</span>  <span class="comment"># download someone else's repo, first time</span></span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Habit to build</span>
+        <p>Always <code>git pull</code> before you start working, and before you <code>git push</code>. It keeps you in sync with any changes made elsewhere and avoids most conflicts.</p>
+      </div>
+    </section>
+
+    <!-- 11. UNDO -->
+    <section class="chapter" id="ch-undo">
+      <div class="chapter-head">
+        <span class="chapter-num">11</span>
+        <h2>Undoing mistakes</h2>
+        <span class="chapter-time">0:52 – 0:55</span>
+      </div>
+      <p class="chapter-dek">Everyone makes mistakes in Git. Here's how to recover from the common ones.</p>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>Unstage a file</h4>
+          <div class="row"><code>git reset HEAD file</code><span>Keeps changes, removes from staging</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Discard local edits</h4>
+          <div class="row"><code>git restore file</code><span>Reverts file to last commit — unrecoverable</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Fix last commit message</h4>
+          <div class="row"><code>git commit --amend -m "..."</code><span>Only before pushing</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Undo a commit safely</h4>
+          <div class="row"><code>git revert &lt;hash&gt;</code><span>Adds a new commit that reverses it</span></div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Handle with care</span>
+        <p><code>git reset --hard &lt;hash&gt;</code> rewinds your branch and <b>permanently discards</b> commits after that point. Prefer <code>git revert</code> — it undoes changes without erasing history.</p>
+      </div>
+    </section>
+
+    <!-- 12. BEST PRACTICES -->
+    <section class="chapter" id="ch-practices">
+      <div class="chapter-head">
+        <span class="chapter-num">12</span>
+        <h2>Best practices</h2>
+        <span class="chapter-time">0:55 – 0:58</span>
+      </div>
+      <p class="chapter-dek">Habits that separate a smooth workflow from a painful one.</p>
+
+      <ul class="checklist">
+        <li>Commit small, related changes often — not one giant commit at the end of the day.</li>
+        <li>Write commit messages that explain <i>what</i> and <i>why</i>, in present tense.</li>
+        <li>Never commit passwords, API keys, or credentials — use a <code>.gitignore</code> file to exclude them.</li>
+        <li>Pull before you push, every time, to avoid unnecessary conflicts.</li>
+        <li>Do risky or experimental work on a branch, never directly on <code>main</code>.</li>
+        <li>Keep <code>main</code> always in a working, deployable state.</li>
+      </ul>
+    </section>
+
+    <!-- 13. CHEAT SHEET -->
+    <section class="chapter" id="ch-cheatsheet">
+      <div class="chapter-head">
+        <span class="chapter-num">13</span>
+        <h2>Cheat sheet</h2>
+        <span class="chapter-time">0:58 – 1:00</span>
+      </div>
+      <p class="chapter-dek">Everything from this hour, in one place. Bookmark this section.</p>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>Setup</h4>
+          <div class="row"><code>git init</code><span>start tracking a folder</span></div>
+          <div class="row"><code>git config --global</code><span>set name/email</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Daily workflow</h4>
+          <div class="row"><code>git status</code><span>what changed</span></div>
+          <div class="row"><code>git add .</code><span>stage everything</span></div>
+          <div class="row"><code>git commit -m ""</code><span>save snapshot</span></div>
+          <div class="row"><code>git push</code><span>send to GitHub</span></div>
+          <div class="row"><code>git pull</code><span>get latest</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>History</h4>
+          <div class="row"><code>git log</code><span>view commits</span></div>
+          <div class="row"><code>git diff</code><span>see exact changes</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Branching</h4>
+          <div class="row"><code>git branch</code><span>list branches</span></div>
+          <div class="row"><code>git checkout -b name</code><span>create + switch</span></div>
+          <div class="row"><code>git merge name</code><span>merge into current</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Remote</h4>
+          <div class="row"><code>git remote add origin</code><span>link to GitHub</span></div>
+          <div class="row"><code>git clone url</code><span>download a repo</span></div>
+        </div>
+        <div class="cheat-card">
+          <h4>Undo</h4>
+          <div class="row"><code>git restore file</code><span>discard local edits</span></div>
+          <div class="row"><code>git reset HEAD file</code><span>unstage</span></div>
+          <div class="row"><code>git revert hash</code><span>safe undo</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="end-card">
+      <h3>🎉 That's the full hour.</h3>
+      <p>You now know more Git than most people who've used it for months without a plan.</p>
+      <p style="margin-top:12px;">Next step: create a real folder, run <code>git init</code>, and build something — the only way this actually sticks is by using it.</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // progress bar
+  const bar = document.getElementById('progress-bar');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = scrolled + '%';
+  }
+  document.addEventListener('scroll', updateProgress);
+  updateProgress();
+
+  // mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const commitList = document.getElementById('commitList');
+  if(navToggle){
+    navToggle.addEventListener('click', () => {
+      commitList.classList.toggle('open');
+      navToggle.textContent = commitList.classList.contains('open') ? '✕ hide chapters' : '☰ show chapters';
+    });
+  }
+
+  // commit click -> scroll
+  document.querySelectorAll('.commit').forEach(el => {
+    el.addEventListener('click', () => {
+      const target = document.getElementById(el.dataset.target);
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+      if(window.innerWidth <= 900){ commitList.classList.remove('open'); navToggle.textContent = '☰ show chapters'; }
+    });
+  });
+
+  // active section highlight
+  const sections = document.querySelectorAll('section.chapter');
+  const commits = document.querySelectorAll('.commit');
+  const map = {};
+  commits.forEach(c => map[c.dataset.target] = c);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const link = map[entry.target.id];
+      if(!link) return;
+      if(entry.isIntersecting){
+        commits.forEach(c => c.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

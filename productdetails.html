@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Inkwell &amp; Bond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A; --paper:#F7F3EA; --paper-dim:#EFE9DA; --brass:#B8935A;
+    --brass-dark:#96733D; --stone:#6B6558; --forest:#3D5C4A; --rust:#A6432F;
+    --shadow: 0 12px 30px rgba(27,42,74,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--paper); color:var(--ink); font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; letter-spacing:-0.01em; }
+  a{color:inherit;} button{font-family:inherit;}
+  ::selection{background:var(--brass); color:var(--paper);}
+
+  header{ display:flex; align-items:center; justify-content:space-between; padding:28px 48px; border-bottom:1px solid rgba(27,42,74,0.12); position:sticky; top:0; background:var(--paper); z-index:40; gap:20px; }
+  .logo{ display:flex; align-items:center; gap:12px; font-size:22px; font-weight:600; text-decoration:none; flex-shrink:0; }
+  .logo-mark{ width:34px;height:34px; border-radius:50%; border:1.5px solid var(--ink); display:flex;align-items:center;justify-content:center; font-family:'Fraunces', serif; font-size:16px; }
+  nav{ display:flex; gap:32px; font-size:14px; letter-spacing:0.03em; text-transform:uppercase; flex-shrink:0; }
+  nav a{ text-decoration:none; opacity:0.75; transition:opacity .2s; }
+  nav a:hover, nav a.active{ opacity:1; }
+  .header-actions{ display:flex; align-items:center; gap:16px; flex-shrink:0; }
+  .acct-link{ font-size:20px; text-decoration:none; }
+  .cart-btn{ display:flex; align-items:center; gap:10px; background:var(--ink); color:var(--paper); border:none; border-radius:999px; padding:10px 20px; font-size:14px; font-weight:500; cursor:pointer; text-decoration:none; transition:transform .15s ease, box-shadow .15s ease; }
+  .cart-btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
+  #cart-count{ background:var(--brass); color:var(--ink); border-radius:999px; min-width:20px; height:20px; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--brass); outline-offset:3px; }
+
+  .breadcrumb{ padding:22px 48px 0; font-size:13px; color:var(--stone); }
+  .breadcrumb a{ text-decoration:none; }
+  .breadcrumb a:hover{ text-decoration:underline; }
+
+  main{ max-width:1180px; margin:0 auto; padding:0 48px 100px; }
+
+  .product-view{ display:grid; grid-template-columns:1fr 1fr; gap:56px; padding:36px 0 70px; }
+  .gallery-main{ background:var(--paper-dim); border:1px solid rgba(27,42,74,0.12); border-radius:8px; height:420px; display:flex; align-items:center; justify-content:center; font-size:140px; }
+  .gallery-thumbs{ display:flex; gap:10px; margin-top:14px; }
+  .thumb{ width:56px; height:56px; border-radius:6px; background:var(--paper-dim); border:1px solid rgba(27,42,74,0.15); display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; }
+  .thumb.active{ border-color:var(--ink); }
+
+  .info .cat-label{ font-size:12.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--brass-dark); font-weight:600; margin-bottom:10px; }
+  .info h1{ font-size:36px; margin:0 0 12px; line-height:1.1; }
+  .rating{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--stone); margin-bottom:18px; }
+  .rating .stars{ color:var(--brass-dark); letter-spacing:1px; }
+  .price{ font-family:'Fraunces', serif; font-size:26px; margin-bottom:18px; }
+  .stock-line{ font-size:13.5px; font-weight:500; margin-bottom:20px; }
+  .stock-line.low{ color:var(--rust); } .stock-line.ok{ color:var(--forest); }
+  .desc{ font-size:15px; line-height:1.7; color:var(--stone); margin-bottom:26px; }
+
+  .qty-selector{ display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+  .qty-selector button{ width:34px; height:34px; border-radius:50%; border:1px solid var(--ink); background:none; cursor:pointer; font-size:16px; color:var(--ink); }
+  .qty-selector span{ font-size:15px; min-width:20px; text-align:center; }
+
+  .action-row{ display:flex; gap:12px; margin-bottom:30px; }
+  .add-btn{ flex:1; background:var(--ink); color:var(--paper); border:none; border-radius:999px; padding:15px; font-size:15px; font-weight:500; cursor:pointer; transition:background .2s ease; }
+  .add-btn:hover{ background:var(--brass-dark); }
+  .wish-toggle{ width:52px; border:1.5px solid var(--ink); border-radius:999px; background:none; cursor:pointer; font-size:18px; color:var(--ink); }
+  .wish-toggle.active{ color:var(--rust); }
+
+  .meta-list{ font-size:13px; color:var(--stone); display:flex; flex-direction:column; gap:6px; border-top:1px solid rgba(27,42,74,0.12); padding-top:18px; }
+
+  .tabs{ display:flex; gap:8px; border-bottom:1px solid rgba(27,42,74,0.14); margin-bottom:26px; }
+  .tab-btn{ background:none; border:none; padding:12px 18px; font-size:14px; cursor:pointer; color:var(--stone); border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tab-btn.active{ color:var(--ink); border-color:var(--brass-dark); font-weight:500; }
+  .tab-panel{ display:none; font-size:14.5px; line-height:1.75; color:var(--stone); max-width:720px; }
+  .tab-panel.active{ display:block; }
+  .review{ border-bottom:1px solid rgba(27,42,74,0.1); padding:16px 0; }
+  .review .who{ font-weight:500; color:var(--ink); font-size:14px; }
+  .review .stars{ color:var(--brass-dark); font-size:13px; margin:4px 0; }
+
+  .related{ padding:60px 0 0; border-top:1px solid rgba(27,42,74,0.12); }
+  .related h2{ font-size:24px; margin:0 0 24px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:20px; }
+  .rcard{ text-decoration:none; color:var(--ink); border:1px solid rgba(27,42,74,0.14); border-radius:6px; overflow:hidden; transition:box-shadow .2s ease, transform .2s ease; }
+  .rcard:hover{ box-shadow:var(--shadow); transform:translateY(-3px); }
+  .rcard .art{ height:120px; background:var(--paper-dim); display:flex; align-items:center; justify-content:center; font-size:40px; }
+  .rcard .body{ padding:14px; }
+  .rcard h3{ font-size:15px; margin:0 0 6px; }
+  .rcard .price{ font-size:14px; margin:0; }
+
+  footer{ padding:36px 48px; border-top:1px solid rgba(27,42,74,0.12); font-size:13px; color:var(--stone); display:flex; justify-content:space-between; max-width:1280px; margin:0 auto; }
+
+  .toast{ position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--paper); padding:13px 22px; border-radius:999px; font-size:13.5px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .22s ease, transform .22s ease; z-index:70; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @media (max-width:800px){
+    header{ padding:18px 20px; } nav{ display:none; }
+    .breadcrumb{ padding:18px 20px 0; }
+    main{ padding:0 20px 70px; }
+    .product-view{ grid-template-columns:1fr; gap:30px; padding:24px 0 50px; }
+    .gallery-main{ height:280px; font-size:100px; }
+    footer{ padding:28px 20px; flex-direction:column; gap:6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="home.html"><span class="logo-mark">I&amp;B</span>Inkwell &amp; Bond</a>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="index.html">Shop</a>
+    <a href="about.html">About</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="header-actions">
+    <a class="acct-link" href="account.html" aria-label="Account">☰︎</a>
+    <a class="cart-btn" href="index.html">Bag <span id="cart-count">0</span></a>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="home.html">Home</a> / <a href="index.html">Shop</a> / <span id="crumbName">Product</span>
+</div>
+
+<main>
+  <div class="product-view">
+    <div>
+      <div class="gallery-main" id="galleryMain"></div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
+    <div class="info" id="infoPanel"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="details">Details</button>
+    <button class="tab-btn" data-tab="care">Care</button>
+    <button class="tab-btn" data-tab="reviews">Reviews</button>
+  </div>
+  <div class="tab-panel active" id="tab-details"></div>
+  <div class="tab-panel" id="tab-care">
+    <p>Store away from direct sunlight and humidity. Paper goods are best kept flat. Brass items develop a natural patina over time — polish gently with a soft cloth if you prefer a brighter finish.</p>
+  </div>
+  <div class="tab-panel" id="tab-reviews" id="tab-reviews"></div>
+
+  <div class="related">
+    <h2>You may also like</h2>
+    <div class="grid" id="relatedGrid"></div>
+  </div>
+</main>
+
+<footer>
+  <span>© 2026 Inkwell &amp; Bond, Ltd.</span>
+  <span>Shipped flat, sealed with wax, every Tuesday.</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const PRODUCTS = [
+    { id:'p1', name:'Cotton Rag Notebook', category:'Notebooks', desc:'240 pages, hand-sewn binding, deckled edge. Made from 100% cotton rag paper that takes fountain pen ink beautifully without feathering or bleed-through.', price:28, art:'📓', rating:4.8, reviews:126, stock:14 },
+    { id:'p2', name:'Bristol Fountain Pen', category:'Pens', desc:'Brass barrel, fine nib, refillable converter. Weighted for long writing sessions and finished with a hand-brushed matte coat that ages beautifully.', price:64, art:'🖋️', rating:4.9, reviews:84, stock:4 },
+    { id:'p3', name:'Amber Sealing Wax Kit', category:'Wax', desc:'Three sticks, brass seal, bone spoon. Poured in small batches and cut by hand, each stick seals cleanly with a satisfying snap.', price:22, art:'🕯️', rating:4.6, reviews:57, stock:22 },
+    { id:'p4', name:'Letterpress Card Set', category:'Cards', desc:'Twelve cards, cotton envelopes, printed by hand on a century-old letterpress with deep, tactile impression.', price:19, art:'✉️', rating:4.7, reviews:39, stock:3 },
+    { id:'p5', name:'Iron Gall Ink, 50ml', category:'Ink', desc:'Slow-oxidizing ink for archival correspondence. Deepens from grey to true black over the first few days on the page.', price:16, art:'🧴', rating:4.5, reviews:61, stock:19 },
+    { id:'p6', name:'Brass Letter Opener', category:'Accessories', desc:'Cast brass, walnut handle, weighted grip. A small, quiet ritual object for the start of every letter.', price:34, art:'🗡️', rating:4.9, reviews:22, stock:9 },
+  ];
+  const REVIEWS = {
+    p1:[{who:'Marta H.',stars:5,text:'The paper handles wet ink so well. My daily pages have never looked better.'},{who:'Owen R.',stars:4,text:'Beautiful binding — wish it came in a slightly larger size too.'}],
+    p2:[{who:'Priya K.',stars:5,text:'Smooth from the first stroke. Worth the wait for the fine nib.'},{who:'Tomas B.',stars:5,text:'Heavier than I expected, in a good way.'}],
+    p3:[{who:'Alex F.',stars:5,text:'Seals cleanly every time, no cracking.'}],
+    p4:[{who:'Sana L.',stars:4,text:'Gorgeous impression, the envelopes are lovely too.'}],
+    p5:[{who:'Devon W.',stars:4,text:'Watching it darken over the week is oddly satisfying.'}],
+    p6:[{who:'Ines C.',stars:5,text:'Feels like an heirloom already.'}],
+  };
+
+  function getCart(){ try{ return JSON.parse(localStorage.getItem('inkwell_cart')||'{}'); }catch(e){ return {}; } }
+  function saveCart(c){ try{ localStorage.setItem('inkwell_cart', JSON.stringify(c)); }catch(e){} }
+  function getWishlist(){ try{ return JSON.parse(localStorage.getItem('inkwell_wishlist')||'{}'); }catch(e){ return {}; } }
+  function saveWishlist(w){ try{ localStorage.setItem('inkwell_wishlist', JSON.stringify(w)); }catch(e){} }
+  function updateCartCount(){
+    const c = getCart();
+    document.getElementById('cart-count').textContent = Object.values(c).reduce((a,b)=>a+b,0);
+  }
+  function stars(r){ const f = Math.round(r); return '★'.repeat(f) + '☆'.repeat(5-f); }
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || 'p1';
+  const product = PRODUCTS.find(p => p.id === id) || PRODUCTS[0];
+  let qty = 1;
+
+  document.title = `${product.name} — Inkwell & Bond`;
+  document.getElementById('crumbName').textContent = product.name;
+  document.getElementById('galleryMain').textContent = product.art;
+  document.getElementById('galleryThumbs').innerHTML = [product.art, '📦', '✦'].map((a,i) =>
+    `<div class="thumb ${i===0?'active':''}" data-art="${a}">${a}</div>`
+  ).join('');
+  document.querySelectorAll('.thumb').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.thumb').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('galleryMain').textContent = t.dataset.art;
+  }));
+
+  function stockText(stock){
+    return stock <= 5 ? { text:`Only ${stock} left in stock`, cls:'low' } : { text:'In stock, ships Tuesday', cls:'ok' };
+  }
+
+  function renderInfo(){
+    const wl = getWishlist();
+    const isWished = !!wl[product.id];
+    const si = stockText(product.stock);
+    document.getElementById('infoPanel').innerHTML = `
+      <div class="cat-label">${product.category}</div>
+      <h1>${product.name}</h1>
+      <div class="rating"><span class="stars">${stars(product.rating)}</span> ${product.rating} · ${product.reviews} reviews</div>
+      <div class="price">$${product.price.toFixed(2)}</div>
+      <div class="stock-line ${si.cls}">${si.text}</div>
+      <div class="desc">${product.desc}</div>
+      <div class="qty-selector">
+        <button id="qDec" aria-label="Decrease quantity">−</button>
+        <span id="qVal">${qty}</span>
+        <button id="qInc" aria-label="Increase quantity">+</button>
+      </div>
+      <div class="action-row">
+        <button class="add-btn" id="addBtn">Add to Bag — $${(product.price*qty).toFixed(2)}</button>
+        <button class="wish-toggle ${isWished?'active':''}" id="wishBtn" aria-label="Toggle wishlist">${isWished?'♥':'♡'}</button>
+      </div>
+      <div class="meta-list">
+        <span>Free shipping on orders over $75</span>
+        <span>Ships flat, sealed with wax, every Tuesday</span>
+        <span>SKU: INK-${product.id.toUpperCase()}</span>
+      </div>
+    `;
+    document.getElementById('qDec').addEventListener('click', () => { qty = Math.max(1, qty-1); syncQty(); });
+    document.getElementById('qInc').addEventListener('click', () => { qty = Math.min(product.stock, qty+1); syncQty(); });
+    document.getElementById('addBtn').addEventListener('click', () => {
+      const c = getCart();
+      c[product.id] = (c[product.id]||0) + qty;
+      saveCart(c);
+      updateCartCount();
+      showToast(`Added ${qty} × ${product.name} to your bag`);
+    });
+    document.getElementById('wishBtn').addEventListener('click', () => {
+      const w = getWishlist();
+      if (w[product.id]) delete w[product.id]; else w[product.id] = true;
+      saveWishlist(w);
+      renderInfo();
+    });
+  }
+  function syncQty(){
+    document.getElementById('qVal').textContent = qty;
+    document.getElementById('addBtn').textContent = `Add to Bag — $${(product.price*qty).toFixed(2)}`;
+  }
+  renderInfo();
+
+  document.getElementById('tab-details').innerHTML = `<p>${product.desc}</p><p>Category: ${product.category}. Every piece is inspected by hand before it ships — small imperfections in grain or wax are part of the material, not a flaw.</p>`;
+  document.getElementById('tab-reviews').innerHTML = (REVIEWS[product.id]||[]).map(r => `
+    <div class="review">
+      <div class="who">${r.who}</div>
+      <div class="stars">${stars(r.stars)}</div>
+      <div>${r.text}</div>
+    </div>
+  `).join('') || '<p>No reviews yet.</p>';
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  const related = PRODUCTS.filter(p => p.id !== product.id && p.category === product.category);
+  const fallback = PRODUCTS.filter(p => p.id !== product.id && p.category !== product.category);
+  const relatedList = (related.length >= 3 ? related : related.concat(fallback)).slice(0,4);
+  document.getElementById('relatedGrid').innerHTML = relatedList.map(p => `
+    <a class="rcard" href="product.html?id=${p.id}">
+      <div class="art">${p.art}</div>
+      <div class="body">
+        <h3>${p.name}</h3>
+        <div class="price">$${p.price.toFixed(2)}</div>
+      </div>
+    </a>
+  `).join('');
+
+  let toastTimer=null;
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  updateCartCount();
+</script>
+</body>
+</html>
