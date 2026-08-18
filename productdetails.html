@@ -139,7 +139,7 @@
   <div class="tab-panel" id="tab-care">
     <p>Store away from direct sunlight and humidity. Paper goods are best kept flat. Brass items develop a natural patina over time — polish gently with a soft cloth if you prefer a brighter finish.</p>
   </div>
-  <div class="tab-panel" id="tab-reviews" id="tab-reviews"></div>
+  <div class="tab-panel" id="tab-reviews"></div>
 
   <div class="related">
     <h2>You may also like</h2>
@@ -273,7 +273,7 @@
   const fallback = PRODUCTS.filter(p => p.id !== product.id && p.category !== product.category);
   const relatedList = (related.length >= 3 ? related : related.concat(fallback)).slice(0,4);
   document.getElementById('relatedGrid').innerHTML = relatedList.map(p => `
-    <a class="rcard" href="product.html?id=${p.id}">
+    <a class="rcard" href="productdetails.html?id=${p.id}">
       <div class="art">${p.art}</div>
       <div class="body">
         <h3>${p.name}</h3>
